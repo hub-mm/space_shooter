@@ -9,7 +9,7 @@ class Missiles(object):
         self.window = GameWindow()
 
         self.bullet_size = (10, 10)
-        self.bullet_speed = 10
+        self.bullet_speed = 20
 
         self.bullet_gap_next = 0
         self.bullet_gap = 30
