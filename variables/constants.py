@@ -8,7 +8,7 @@ WINDOW_HEIGHT = 1000
 
 # Colours
 COLOUR_BACKGROUND = (0, 0, 0)
-COLOUR_SPIKE = (255, 0, 0)
+COLOUR_BULLET = (255, 0, 0)
 
 # Icon
 ICON_IMG_PATH = './img/target.png'

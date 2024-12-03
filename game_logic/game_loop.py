@@ -13,6 +13,7 @@ class GameLoop(object):
         spaceship = SpaceShip()
         missiles = Missiles()
 
+
         run = True
         while run:
             # Background
@@ -20,12 +21,11 @@ class GameLoop(object):
 
             # Spaceship
             window.surface.blit(spaceship.space_ship_img, (cv.X, cv.Y))
-
             spaceship.move_logic()
 
             # Missile spike
-            missiles.generate_spike()
-            missiles.move_spike()
+            missiles.generate_bullet()
+            missiles.move_bullet()
 
 
             for event in pygame.event.get():

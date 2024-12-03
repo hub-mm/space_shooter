@@ -17,4 +17,5 @@ class GameWindow(object):
         icon_img = pygame.image.load(cv.ICON_IMG_PATH)
         pygame.display.set_icon(icon_img)
 
-        self.spikes = []
+        # Create spike list
+        self.bullets = []
