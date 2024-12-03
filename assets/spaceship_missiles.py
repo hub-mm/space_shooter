@@ -10,8 +10,15 @@ class Missiles(object):
 
         self.bullet_size = (10, 10)
         self.bullet_speed = 10
-        self.next_bullet = 0
-        self.next_bullet_delay = 500
+
+        self.bullet_gap_next = 0
+        self.bullet_gap = 30
+
+        self.bullet_delay_next = 0
+        self.bullet_delay = 500
+
+        self.max_bullets = 1
+        self.bullet_count = self.max_bullets
 
     def generate_bullet(self):
         keys = pygame.key.get_pressed()
@@ -23,13 +30,19 @@ class Missiles(object):
             self.bullet_size[1],
         )
 
+        if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+            self.bullet_logic(bullet)
+
+    def bullet_logic(self, bullet):
         current_time = pygame.time.get_ticks()
-
-        if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT] and current_time > self.next_bullet:
-            self.next_bullet_delay = 500
-            self.next_bullet = self.next_bullet_delay + current_time
-
+        if self.bullet_count < self.max_bullets and current_time >= self.bullet_gap_next:
+            self.bullet_count += 1
+            self.bullet_gap_next = self.bullet_gap + current_time
             self.window.bullets.append(bullet)
+
+        if self.bullet_count >= self.max_bullets and current_time >= self.bullet_delay_next:
+            self.bullet_delay_next = self.bullet_delay + current_time
+            self.bullet_count = 0
 
     def move_bullet(self):
         for bullet in self.window.bullets[:]:
