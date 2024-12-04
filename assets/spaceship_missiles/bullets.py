@@ -23,7 +23,7 @@ class Bullets(Missiles):
             delay,
             maximum,
         )
-        self.size = (5, 10)
+        self.size = (5, 15)
         self.speed = 10
 
         self.gap_next = 0
