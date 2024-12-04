@@ -9,7 +9,7 @@ class Missiles(object):
         self.window = GameWindow()
 
         self.bullet_size = (10, 10)
-        self.bullet_speed = 20
+        self.bullet_speed = 10
 
         self.bullet_gap_next = 0
         self.bullet_gap = 30
@@ -38,6 +38,7 @@ class Missiles(object):
         if self.bullet_count < self.max_bullets and current_time >= self.bullet_gap_next:
             self.bullet_count += 1
             self.bullet_gap_next = self.bullet_gap + current_time
+
             self.window.bullets.append(bullet)
 
         if self.bullet_count >= self.max_bullets and current_time >= self.bullet_delay_next:
@@ -45,7 +46,7 @@ class Missiles(object):
             self.bullet_count = 0
 
     def move_bullet(self):
-        for bullet in self.window.bullets[:]:
+        for bullet in self.window.bullets:
             bullet[1] -= self.bullet_speed
 
             pygame.draw.rect(
