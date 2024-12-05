@@ -4,7 +4,7 @@ from variables import constants as cv
 import pygame
 
 class SpaceShip(object):
-    def __init__(self, window, enemy):
+    def __init__(self, window, enemy, speed, size):
         self.window = window
         self.enemy = enemy
 
