@@ -23,14 +23,14 @@ class Bullets(Missiles):
             delay,
             maximum,
         )
-        self.size = (5, 15)
-        self.speed = 10
+        self.size = size
+        self.speed = speed
 
-        self.gap_next = 0
-        self.gap = 30
+        self.gap_next = gap_next
+        self.gap = gap
 
-        self.delay_next = 0
-        self.delay = 500
+        self.delay_next = delay_next
+        self.delay = delay
 
-        self.maximum = 1
+        self.maximum = maximum
         self.missiles_count = self.maximum
