@@ -11,16 +11,16 @@ import pygame
 
 class GameLoop(object):
     def __init__(self):
-        window = GameWindow()
-        bullets = Bullets(window)
-        enemy = Enemy(window, bullets)
-        spaceship = SpaceShip(window, enemy)
-        text_display = TextDisplay(window, enemy, spaceship)
+        self.window = GameWindow()
+        bullets = self.bullets()
+        self.enemy = Enemy(self.window, bullets)
+        spaceship = self.spaceship()
+        text_display = TextDisplay(self.window, self.enemy, spaceship)
 
         self.run = True
         while self.run:
             # Background
-            window.surface.fill(cv.COLOUR_BACKGROUND)
+            self.window.surface.fill(cv.COLOUR_BACKGROUND)
 
             # Text
             text_display.display_title()
@@ -28,7 +28,7 @@ class GameLoop(object):
             text_display.display_wave()
 
             # Spaceship
-            window.surface.blit(spaceship.spaceship_img, (cv.X, cv.Y))
+            self.window.surface.blit(spaceship.spaceship_img, (cv.X, cv.Y))
             spaceship.move_logic()
             spaceship.loose_life()
 
@@ -37,10 +37,10 @@ class GameLoop(object):
             bullets.move_missiles()
 
             # Enemy
-            enemy.generate_enemy()
-            enemy.move_enemy()
-            enemy.kill_enemy()
-            enemy.new_wave()
+            self.enemy.generate_enemy()
+            self.enemy.move_enemy()
+            self.enemy.kill_enemy()
+            self.enemy.new_wave()
 
             for event in pygame.event.get():
                 keys = pygame.key.get_pressed()
@@ -52,7 +52,32 @@ class GameLoop(object):
                 self.close_game()
 
             pygame.display.update()
-            window.clock.tick(60)
+            self.window.clock.tick(60)
+
+    def spaceship(self):
+        speed = 5
+        size = (75, 75)
+
+        spaceship = SpaceShip(self.window, self.enemy, speed, size)
+
+        return spaceship
+
+
+    def bullets(self):
+        size = (5, 15)
+        speed = 10
+
+        gap_next = 0
+        gap = 30
+
+        delay_next = 0
+        delay = 500
+
+        maximum = 1
+
+        bullets = Bullets(self.window, size, speed, gap_next, gap, delay_next, delay, maximum)
+
+        return bullets
 
     def close_game(self):
         self.run = False
