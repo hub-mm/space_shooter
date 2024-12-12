@@ -1,83 +1,102 @@
 # ./game_logic/game_loop.py
-from variables import constants as cv
-from display.game_window import GameWindow
-from assets.spaceship_missiles.bullets import Bullets
-from assets.enemy import Enemy
-from assets.spaceship import SpaceShip
-from display.text_display import TextDisplay
-
 import sys
 import pygame
 
-class GameLoop(object):
+from variables import constants as cv
+from display.game_window import GameWindow
+from display.text_display import TextDisplay
+from assets.spaceship_missiles.bullets import Bullets
+from assets.enemy import Enemy
+from assets.spaceship import SpaceShip
+from assets.spaceship_powerups.powerups import Powerups
+from game_logic.collision_checks import CollisionChecks
+
+
+
+class GameLoop:
     def __init__(self):
         self.window = GameWindow()
-        bullets = self.bullets()
-        self.enemy = Enemy(self.window, bullets)
-        spaceship = self.spaceship()
-        text_display = TextDisplay(self.window, self.enemy, spaceship)
-
         self.run = True
+
+        self.bullets = self._create_bullets()
+        self.enemy = self._create_enemy()
+        self.spaceship = self._create_spaceship()
+        self.powerup_class = self._create_powerups()
+        self.collision_checks = self._create_collision_checks()
+        self.text_display = self._create_text_display()
+
         while self.run:
-            # Background
-            self.window.surface.fill(cv.COLOUR_BACKGROUND)
+            self._handle_events()
+            self._update_display()
+            self._update_spaceship()
+            self._update_bullets()
+            self._update_enemy()
+            self._update_powerups()
+            self._update_collisions()
 
-            # Text
-            text_display.display_title()
-            text_display.display_lives()
-            text_display.display_wave()
-
-            # Spaceship
-            self.window.surface.blit(spaceship.spaceship_img, (cv.X, cv.Y))
-            spaceship.move_logic()
-            spaceship.loose_life()
-
-            # Missile bullets
-            bullets.generate_missiles()
-            bullets.move_missiles()
-
-            # Enemy
-            self.enemy.generate_enemy()
-            self.enemy.move_enemy()
-            self.enemy.kill_enemy()
             self.enemy.new_wave()
-
-            for event in pygame.event.get():
-                keys = pygame.key.get_pressed()
-
-                if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
-                    self.close_game()
-
-            if spaceship.lives <= 0:
-                self.close_game()
+            self._check_game_over()
 
             pygame.display.update()
             self.window.clock.tick(60)
 
-    def spaceship(self):
-        speed = 5
+    def _create_spaceship(self):
+        speed = 3
         size = (75, 75)
+        return SpaceShip(self.window, self.enemy, speed, size)
 
-        spaceship = SpaceShip(self.window, self.enemy, speed, size)
-
-        return spaceship
-
-
-    def bullets(self):
+    def _create_bullets(self):
         size = (5, 15)
         speed = 10
-
         gap_next = 0
-        gap = 30
-
+        gap = 250
         delay_next = 0
-        delay = 500
-
+        delay = 2000
         maximum = 1
+        return Bullets(self.window, size, speed, gap_next, gap, delay_next, delay, maximum)
 
-        bullets = Bullets(self.window, size, speed, gap_next, gap, delay_next, delay, maximum)
+    def _create_enemy(self):
+        return Enemy(self.window, self.bullets)
 
-        return bullets
+    def _create_text_display(self):
+        return TextDisplay(self.window, self.enemy, self.spaceship)
+
+    def _create_powerups(self):
+        return Powerups(self.window, self.spaceship, self.enemy, self.bullets, 'name', (0, 0), 0, (0, 0))
+
+    def _create_collision_checks(self):
+        return CollisionChecks(self.window, self.bullets, self.enemy, self.spaceship, self.powerup_class)
+
+    def _handle_events(self):
+        keys = pygame.key.get_pressed()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
+                self.close_game()
+
+    def _update_display(self):
+        self.window.surface.fill(cv.COLOUR_BACKGROUND)
+        self.text_display.update()
+
+    def _update_spaceship(self):
+        self.window.surface.blit(self.spaceship.spaceship_img, (cv.X, cv.Y))
+        self.spaceship.update()
+
+    def _update_bullets(self):
+        self.bullets.generate_missiles()
+
+    def _update_enemy(self):
+        self.enemy.update()
+
+    def _update_powerups(self):
+        self.powerup_class.move_all_powerups()
+        self.powerup_class.check_collisions()
+
+    def _update_collisions(self):
+        self.collision_checks.update()
+
+    def _check_game_over(self):
+        if self.spaceship.lives <= 0:
+            self.close_game()
 
     def close_game(self):
         self.run = False
