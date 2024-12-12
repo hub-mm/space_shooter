@@ -1,7 +1,8 @@
 # ./display/text_display.py
+import pygame.font
+
 from variables import constants as cv
 
-import pygame.font
 
 class TextDisplay(object):
     def __init__(self, window, enemy, spaceship):
@@ -12,13 +13,17 @@ class TextDisplay(object):
 
         self.wave = 1
 
-    def update(self):
+    def update_game(self):
         self._display_title()
         self._display_lives()
         self._display_coins()
         self._display_wave()
         self._display_level()
         self._display_score()
+
+    def update_start_menu(self, score):
+        self._display_title()
+        self._display_high_score(score)
 
     def _display_title(self):
         text_title = self.style_text.render(
@@ -77,3 +82,15 @@ class TextDisplay(object):
         text_rect.center = (cv.WINDOW_WIDTH / 2, 40)
 
         self.window.surface.blit(text_score, text_rect)
+
+    def _display_high_score(self, highscore):
+        text_highscore = self.style_text.render(
+            f"h i g h s c o r e     {highscore}",
+            True,
+            (255, 0, 0)
+        )
+
+        text_rect = text_highscore.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, 40)
+
+        self.window.surface.blit(text_highscore, text_rect)
