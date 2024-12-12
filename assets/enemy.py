@@ -63,16 +63,16 @@ class Enemy(object):
     def _set_new_number(self):
         self.number_random = random.randint(self.minimum, self.maximum)
 
+        if self.wave % 5 == 4:
+            self.number_random = self.maximum
+
         if self.wave % 5 == 0:
             self.number_random = random.randint(self.minimum, self.maximum)
             self.level += 1
             self.minimum += 2
             self.maximum += 10
 
-        if self.wave % 5 == 4:
-            self.number_random = self.maximum
-
-        if self.wave % 30 == 0:
+        if self.wave % 20 == 0:
             self.speed = min(self.speed + 1, 10)
 
         return self.number_random
