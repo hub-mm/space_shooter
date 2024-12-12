@@ -1,7 +1,8 @@
 # ./display/game_window.py
+import pygame
+
 from variables import constants as cv
 
-import pygame
 
 class GameWindow(object):
     def __init__(self):
@@ -16,6 +17,3 @@ class GameWindow(object):
         # Create window icon
         icon_img = pygame.image.load(cv.ICON_IMG_PATH)
         pygame.display.set_icon(icon_img)
-
-        # Create enemy
-        self.enemies = []
