@@ -4,3 +4,6 @@
 # system generated
 __pycache__
 /.idea
+
+# Saved info files
+*.txt
