@@ -16,9 +16,6 @@ WINDOW_TEXT = 'Welcome to Space Shooter'
 # Icon image
 ICON_IMG_PATH = './img/target.png'
 
-# Heart image
-HEART_IMG_PATH = './img/heart.png'
-
 # Alien image
 ALIEN_IMG_PATH = './assets/assets_img/alien.png'
 
@@ -28,3 +25,11 @@ START_SIZE = (75, 75)
 # Start position
 X = (WINDOW_WIDTH / 2) - (START_SIZE[0] / 2)
 Y = WINDOW_HEIGHT - 85
+
+# Powerups
+MIN_SPAWN = 1
+MAX_SPAWN = 10
+# Heart image
+HEART_IMG_PATH = './img/heart.png'
+# Coin image
+COIN_IMG_PATH = './img/coin.png'
