@@ -12,20 +12,28 @@ class TextDisplay(object):
 
         self.wave = 1
 
-    def display_title(self):
+    def update(self):
+        self._display_title()
+        self._display_lives()
+        self._display_coins()
+        self._display_wave()
+        self._display_level()
+        self._display_score()
+
+    def _display_title(self):
         text_title = self.style_text.render(
-            '-  -  -  -  -  s  p  a  c  e     s  h  o  o  t  e  r  -  -  -  -  -',
+            '- - - - - - - - -  s  p  a  c  e     s  h  o  o  t  e  r  - - - - - - - - -',
             True,
             'green'
         )
 
         text_rect = text_title.get_rect()
-        text_rect.topleft = (80, 8)
+        text_rect.center = (cv.WINDOW_WIDTH / 2, 16)
 
         self.window.surface.blit(text_title, text_rect)
 
-    def display_lives(self):
-        text_lives = self.style_text.render(f"{self.spaceship.lives}", True, 'red')
+    def _display_lives(self):
+        text_lives = self.style_text.render(f"{self.spaceship.lives}", True, (255, 0, 0))
 
         heart_img = pygame.image.load(cv.HEART_IMG_PATH)
         heart_img = pygame.transform.scale(heart_img, (28, 26))
@@ -33,10 +41,39 @@ class TextDisplay(object):
         self.window.surface.blit(heart_img, (5, 5))
         self.window.surface.blit(text_lives, (45, 8))
 
-    def display_wave(self):
-        text_wave = self.style_text.render(f"wave {self.enemy.round}    level {self.enemy.wave}", True, 'white')
+    def _display_coins(self):
+        text_coins = self.style_text.render(f"{self.spaceship.coins}", True, (255, 215, 0))
+
+        coin_img = pygame.image.load(cv.COIN_IMG_PATH)
+        coin_img = pygame.transform.scale(coin_img, (28, 26))
+
+        self.window.surface.blit(coin_img, (5, 45))
+        self.window.surface.blit(text_coins, (45, 49))
+
+    def _display_wave(self):
+        text_wave = self.style_text.render(f"wave {self.enemy.wave}", True, (255, 255, 255))
 
         text_rect = text_wave.get_rect()
         text_rect.topright = (cv.WINDOW_WIDTH - 8, 8)
 
         self.window.surface.blit(text_wave, text_rect)
+
+    def _display_level(self):
+        text_level = self.style_text.render(f"level {self.enemy.level - 1}", True, (255, 255, 255))
+
+        text_rect = text_level.get_rect()
+        text_rect.topright = (cv.WINDOW_WIDTH - 8, 49)
+
+        self.window.surface.blit(text_level, text_rect)
+
+    def _display_score(self):
+        text_score = self.style_text.render(
+            f"s c o r e     {self.enemy.total_killed * (self.spaceship.coins + 1)}",
+            True,
+            (0, 0, 255)
+        )
+
+        text_rect = text_score.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, 40)
+
+        self.window.surface.blit(text_score, text_rect)
