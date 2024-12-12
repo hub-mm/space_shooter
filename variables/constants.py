@@ -1,5 +1,6 @@
 # ./variables/constants.py
 
+
 # CONSTANTS VARIABLES
 
 # Window size
@@ -10,8 +11,10 @@ WINDOW_HEIGHT = 1000
 COLOUR_BACKGROUND = (0, 0, 0)
 COLOUR_BULLET = (0, 255, 0)
 
-# Window caption
-WINDOW_TEXT = 'Welcome to Space Shooter'
+# Window start caption
+WINDOW_START_TEXT = 'Welcome to Space Shooter'
+# Window start caption
+WINDOW_TEXT = 'Space Shooter'
 
 # Icon image
 ICON_IMG_PATH = './img/target.png'
@@ -25,6 +28,9 @@ START_SIZE = (75, 75)
 # Start position
 X = (WINDOW_WIDTH / 2) - (START_SIZE[0] / 2)
 Y = WINDOW_HEIGHT - 85
+# Restart position
+START_X = (WINDOW_WIDTH / 2) - (START_SIZE[0] / 2)
+START_Y = WINDOW_HEIGHT - 85
 
 # Powerups
 MIN_SPAWN = 1
