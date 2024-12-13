@@ -126,7 +126,7 @@ class RandomPowerup(object):
         if self.spaceship.lives == 10 or extra_life in self.powerups.powerups:
             powerup_list.remove(extra_life)
 
-        if random.randint(1, 100) > 1:
+        if random.randint(1, 100) > 60:
             powerup_list.append(invincible)
             self.count = 0
 
