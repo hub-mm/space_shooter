@@ -1,4 +1,4 @@
-# ./saved_info/save_info.py
+# ./saved_info/info_highscore.py
 
 
 class InfoHighscore(object):
@@ -11,11 +11,11 @@ class InfoHighscore(object):
 
     def _ensure_file_exists(self):
         try:
-            with open('./saved_info/highscore.txt', 'r') as read_highscore:
+            with open('./saved_info/highscore/highscore.txt', 'r') as read_highscore:
                 content = read_highscore.read().strip()
                 self.highscore = int(content) if content.isdigit() else 0
         except FileNotFoundError:
-            with open('./saved_info/highscore.txt', 'w') as write_highscore:
+            with open('./saved_info/highscore/highscore.txt', 'w') as write_highscore:
                 write_highscore.write('0')
 
             self.highscore = 0
@@ -31,14 +31,14 @@ class InfoHighscore(object):
         return self.highscore
 
     def _write_highscore(self):
-        with open('./saved_info/highscore.txt', 'w') as write_highscore:
+        with open('./saved_info/highscore/highscore.txt', 'w') as write_highscore:
             write_highscore.write(str(self.highscore))
 
     def _read_highscore(self):
         try:
-            with open('./saved_info/highscore.txt', 'r') as read_highscore:
+            with open('./saved_info/highscore/highscore.txt', 'r') as read_highscore:
                 content = read_highscore.read().strip()
-                self.highscore =  int(content) if content.isdigit() else 0
+                self.highscore = int(content) if content.isdigit() else 0
         except FileNotFoundError:
             self.highscore = 0
 
