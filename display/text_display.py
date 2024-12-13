@@ -10,13 +10,13 @@ class TextDisplay(object):
         self.enemy = enemy
         self.spaceship = spaceship
         self.style_text = pygame.font.SysFont('roboto', 34, True)
-
         self.wave = 1
 
-    def update_start_menu(self, score):
+    def update_start_menu(self, score, coins):
         self._display_title()
-        self._display_high_score(score)
         self._display_score_start_menu()
+        self._display_highscore(score)
+        self._display_total_coins(coins)
         self.button_start_game()
 
     def update_game(self):
@@ -36,17 +36,7 @@ class TextDisplay(object):
 
         text_rect = text_title.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, 16)
-
         self.window.surface.blit(text_title, text_rect)
-
-    def _display_lives(self):
-        text_lives = self.style_text.render(f"{self.spaceship.lives}", True, (255, 0, 0))
-
-        heart_img = pygame.image.load(cv.HEART_IMG_PATH)
-        heart_img = pygame.transform.scale(heart_img, (28, 26))
-
-        self.window.surface.blit(heart_img, (5, 5))
-        self.window.surface.blit(text_lives, (45, 8))
 
     def _display_coins(self):
         text_coins = self.style_text.render(f"{self.spaceship.coins}", True, (255, 215, 0))
@@ -54,15 +44,23 @@ class TextDisplay(object):
         coin_img = pygame.image.load(cv.COIN_IMG_PATH)
         coin_img = pygame.transform.scale(coin_img, (28, 26))
 
-        self.window.surface.blit(coin_img, (5, 45))
-        self.window.surface.blit(text_coins, (45, 49))
+        self.window.surface.blit(coin_img, (5, 5))
+        self.window.surface.blit(text_coins, (45, 8))
+
+    def _display_lives(self):
+        text_lives = self.style_text.render(f"{self.spaceship.lives}", True, (255, 0, 0))
+
+        heart_img = pygame.image.load(cv.HEART_IMG_PATH)
+        heart_img = pygame.transform.scale(heart_img, (28, 26))
+
+        self.window.surface.blit(heart_img, (5, 45))
+        self.window.surface.blit(text_lives, (45, 49))
 
     def _display_wave(self):
         text_wave = self.style_text.render(f"wave {self.enemy.wave}", True, (255, 255, 255))
 
         text_rect = text_wave.get_rect()
         text_rect.topright = (cv.WINDOW_WIDTH - 8, 8)
-
         self.window.surface.blit(text_wave, text_rect)
 
     def _display_level(self):
@@ -70,7 +68,6 @@ class TextDisplay(object):
 
         text_rect = text_level.get_rect()
         text_rect.topright = (cv.WINDOW_WIDTH - 8, 49)
-
         self.window.surface.blit(text_level, text_rect)
 
     def _display_score(self):
@@ -82,7 +79,6 @@ class TextDisplay(object):
 
         text_rect = text_score.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, 40)
-
         self.window.surface.blit(text_score, text_rect)
 
     def _display_score_start_menu(self):
@@ -94,10 +90,9 @@ class TextDisplay(object):
 
         text_rect = text_score.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, 40)
-
         self.window.surface.blit(text_score, text_rect)
 
-    def _display_high_score(self, highscore):
+    def _display_highscore(self, highscore):
         text_highscore = self.style_text.render(
             f"h i g h s c o r e     {highscore}",
             True,
@@ -106,8 +101,16 @@ class TextDisplay(object):
 
         text_rect = text_highscore.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, 200)
-
         self.window.surface.blit(text_highscore, text_rect)
+
+    def _display_total_coins(self, coins):
+        text_coins = self.style_text.render(f"{coins}", True, (255, 215, 0))
+
+        coin_img = pygame.image.load(cv.COIN_IMG_PATH)
+        coin_img = pygame.transform.scale(coin_img, (28, 26))
+
+        self.window.surface.blit(coin_img, (5, 5))
+        self.window.surface.blit(text_coins, (45, 8))
 
     def button_start_game(self):
         start_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 - 100, 200, 50)
@@ -122,7 +125,6 @@ class TextDisplay(object):
 
         text_rect = text_start.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 75)
-
         self.window.surface.blit(text_start, text_rect)
 
         return start_button
