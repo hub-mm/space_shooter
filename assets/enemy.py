@@ -23,6 +23,7 @@ class Enemy(object):
         self.kill_x = 0
         self.kill_y = 0
         self.kill = False
+        self.spawn_max_dis = -200
 
         self.shot_count = 0
         self.shot = []
@@ -47,7 +48,7 @@ class Enemy(object):
     def _generate_enemy(self):
         if self.enemy_count < self.number_random:
             random_width = random.randint(20, cv.WINDOW_WIDTH - (self.size[0] + 20))
-            random_height = random.randint(-200, -10)
+            random_height = random.randint(self.spawn_max_dis, -10)
 
             new_enemy = EnemySprite(random_width, random_height, self.enemy_img, self.speed)
             self.enemy_group.add(new_enemy)
@@ -55,24 +56,26 @@ class Enemy(object):
 
     def new_wave(self):
         if len(self.enemy_group) == 0:
-            self.wave += 1
             self._set_new_number()
             self.enemy_count = 0
             self.killed = 0
+            self.wave += 1
 
     def _set_new_number(self):
-        self.number_random = random.randint(self.minimum, self.maximum)
+        if len(self.enemy_group) == 0:
+            self.number_random = random.randint(self.minimum, self.maximum)
 
         if self.wave % 5 == 4:
             self.number_random = self.maximum
 
-        if self.wave % 5 == 0:
+        if self.wave % 5 == 0 and self.wave != 0:
             self.number_random = random.randint(self.minimum, self.maximum)
             self.level += 1
             self.minimum += 2
             self.maximum += 10
+            self.spawn_max_dis -= 100
 
-        if self.wave % 20 == 0:
+        if self.wave % 20 == 0 and self.wave != 0:
             self.speed = min(self.speed + 1, 10)
 
         return self.number_random
