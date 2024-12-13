@@ -13,6 +13,12 @@ class TextDisplay(object):
 
         self.wave = 1
 
+    def update_start_menu(self, score):
+        self._display_title()
+        self._display_high_score(score)
+        self._display_score_start_menu()
+        self.button_start_game()
+
     def update_game(self):
         self._display_title()
         self._display_lives()
@@ -20,10 +26,6 @@ class TextDisplay(object):
         self._display_wave()
         self._display_level()
         self._display_score()
-
-    def update_start_menu(self, score):
-        self._display_title()
-        self._display_high_score(score)
 
     def _display_title(self):
         text_title = self.style_text.render(
@@ -83,6 +85,18 @@ class TextDisplay(object):
 
         self.window.surface.blit(text_score, text_rect)
 
+    def _display_score_start_menu(self):
+        text_score = self.style_text.render(
+            f"s c o r e     {self.enemy.total_killed * (self.spaceship.coins + 1)}",
+            True,
+            (0, 0, 255)
+        )
+
+        text_rect = text_score.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, 40)
+
+        self.window.surface.blit(text_score, text_rect)
+
     def _display_high_score(self, highscore):
         text_highscore = self.style_text.render(
             f"h i g h s c o r e     {highscore}",
@@ -91,6 +105,24 @@ class TextDisplay(object):
         )
 
         text_rect = text_highscore.get_rect()
-        text_rect.center = (cv.WINDOW_WIDTH / 2, 40)
+        text_rect.center = (cv.WINDOW_WIDTH / 2, 200)
 
         self.window.surface.blit(text_highscore, text_rect)
+
+    def button_start_game(self):
+        start_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 - 100, 200, 50)
+        mouse = pygame.mouse.get_pos()
+
+        if start_button.collidepoint(mouse):
+            pygame.draw.rect(self.window.surface, (200, 0, 0), start_button, 0, 10)
+            text_start = self.style_text.render(f"start game", True, (0, 0, 0))
+        else:
+            pygame.draw.rect(self.window.surface, (255, 0, 0), start_button, 0, 10)
+            text_start = self.style_text.render(f"start game", True, (255, 255, 255))
+
+        text_rect = text_start.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 75)
+
+        self.window.surface.blit(text_start, text_rect)
+
+        return start_button
