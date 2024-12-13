@@ -7,6 +7,7 @@ from assets.spaceship_powerups.move_faster import MoveFaster
 from assets.spaceship_powerups.reduce_gap import ReduceGap
 from assets.spaceship_powerups.extra_life import ExtraLife
 from assets.spaceship_powerups.extra_coin import ExtraCoin
+from assets.spaceship_powerups.invincible import Invincible
 
 class RandomPowerup(object):
     def __init__(self, window, bullets, enemy, spaceship, powerups):
@@ -15,6 +16,8 @@ class RandomPowerup(object):
         self.enemy = enemy
         self.spaceship = spaceship
         self.powerups = powerups
+
+        self.count = 0
 
     def update(self):
         return self._create_random_powerup()
@@ -80,14 +83,32 @@ class RandomPowerup(object):
             'extra_coin',
             (30, 30),
             speed,
-            (255, 215, 0)
+            ()
+        )
+        invincible = Invincible(
+            self.window,
+            self.spaceship,
+            self.enemy,
+            self.bullets,
+            'invincible',
+            (30, 30),
+            speed,
+            ()
         )
 
-        powerup_list = self._powerup_logic(extra_shot, less_delay, move_faster, reduce_gap, extra_life, extra_coin)
+        powerup_list = self._powerup_logic(
+            extra_shot,
+            less_delay,
+            move_faster,
+            reduce_gap,
+            extra_life,
+            extra_coin,
+            invincible
+        )
 
         return random.choice(powerup_list)
 
-    def _powerup_logic(self, extra_shot, less_delay, move_faster, reduce_gap, extra_life, extra_coin):
+    def _powerup_logic(self, extra_shot, less_delay, move_faster, reduce_gap, extra_life, extra_coin, invincible):
         powerup_list = [extra_shot, less_delay, move_faster, reduce_gap, extra_life, extra_coin]
 
         if self.bullets.maximum == 20:
@@ -104,5 +125,9 @@ class RandomPowerup(object):
 
         if self.spaceship.lives == 10 or extra_life in self.powerups.powerups:
             powerup_list.remove(extra_life)
+
+        if random.randint(1, 100) > 1:
+            powerup_list.append(invincible)
+            self.count = 0
 
         return powerup_list

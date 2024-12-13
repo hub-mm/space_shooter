@@ -12,12 +12,18 @@ class SpaceShip(object):
         self.size = size
         self.lives = 5
         self.coins = 0
+        self.state_count = 0
+        self.state = 'normal'
 
         self.spaceship_img = pygame.image.load(cv.SPACESHIP_IMG_PATH)
         self.spaceship_img = pygame.transform.scale(self.spaceship_img, cv.START_SIZE)
 
     def update(self):
         self._handle_movement()
+
+        if self.state == 'invincible':
+            self._check_state()
+            self._end_invincibility_animation()
 
     def _handle_movement(self):
         keys = pygame.key.get_pressed()
@@ -33,5 +39,36 @@ class SpaceShip(object):
                 or keys[pygame.K_DOWN] and cv.Y <= (cv.WINDOW_HEIGHT - self.size[1]) - 5):
             cv.Y += self.speed
 
+    def _check_state(self):
+        self.state_count += 1
+        if self.state_count > 600:
+            self.state = 'normal'
+            self.state_count = 0
+            self.spaceship_img = pygame.image.load(cv.SPACESHIP_IMG_PATH)
+            self.spaceship_img = pygame.transform.scale(self.spaceship_img, cv.START_SIZE)
+
+    def _end_invincibility_animation(self):
+        if 570 < self.state_count < 575:
+            self.spaceship_img = pygame.image.load(cv.SPACESHIP_IMG_PATH)
+            self.spaceship_img = pygame.transform.scale(self.spaceship_img, cv.START_SIZE)
+        elif 580 < self.state_count < 585:
+            self.spaceship_img = pygame.image.load(cv.SPACESHIP_INVINCIBLE_IMG_PATH)
+            self.spaceship_img = pygame.transform.scale(self.spaceship_img, cv.START_SIZE)
+        elif 585 < self.state_count < 590:
+            self.spaceship_img = pygame.image.load(cv.SPACESHIP_IMG_PATH)
+            self.spaceship_img = pygame.transform.scale(self.spaceship_img, cv.START_SIZE)
+        elif 590 < self.state_count < 595:
+            self.spaceship_img = pygame.image.load(cv.SPACESHIP_INVINCIBLE_IMG_PATH)
+            self.spaceship_img = pygame.transform.scale(self.spaceship_img, cv.START_SIZE)
+
+    def _lose_life_animation(self):
+        self.window.surface.fill((100, 0, 0))
+        self.window.surface.fill(cv.COLOUR_BACKGROUND)
+        self.window.surface.fill((100, 0, 0))
+
     def lose_life(self):
+        if self.state == 'invincible':
+            return
+
+        self._lose_life_animation()
         self.lives -= 1

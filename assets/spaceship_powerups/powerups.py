@@ -44,6 +44,10 @@ class Powerups(object):
             self.img = pygame.image.load(cv.COIN_IMG_PATH)
             self.img = pygame.transform.scale(self.img, (30, 30))
 
+        if powerup_type.powerup_name == 'invincible':
+            self.img = pygame.image.load(cv.INVINCIBLE_IMG_PATH)
+            self.img = pygame.transform.scale(self.img, (30, 30))
+
         return self.img
 
     def move_all_powerups(self):
@@ -52,7 +56,9 @@ class Powerups(object):
             p_rect = entry['rect']
             p_rect.y += p_type.speed
 
-            if p_type.powerup_name == 'extra_life' or p_type.powerup_name == 'extra_coin':
+            if (p_type.powerup_name == 'extra_life' or
+                    p_type.powerup_name == 'extra_coin' or
+                    p_type.powerup_name == 'invincible'):
                 self.window.surface.blit(self.load_img(p_type), (p_rect.x, p_rect.y))
             else:
                 pygame.draw.rect(self.window.surface, p_type.colour, p_rect)
