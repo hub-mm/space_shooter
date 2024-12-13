@@ -1,7 +1,7 @@
 # ./saved_info/save_info.py
 
 
-class SaveInfo(object):
+class InfoHighscore(object):
     def __init__(self, enemy, spaceship):
         self.enemy = enemy
         self.spaceship = spaceship
