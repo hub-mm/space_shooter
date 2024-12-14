@@ -1,8 +1,6 @@
 # ./saved_info/spaceship_build/info_spaceship.py
 import os
 
-from pygame.display import update
-
 
 class InfoSpaceship(object):
     def __init__(self):
