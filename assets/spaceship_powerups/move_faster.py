@@ -7,4 +7,4 @@ class MoveFaster(Powerups):
         super().__init__(window, spaceship, enemy, bullets, powerup_name, size, speed, colour)
 
     def powerup_activated(self):
-        self.spaceship.speed = min(self.spaceship.speed + 1, 10)
+        self.spaceship.default_speed = min(self.spaceship.speed + 1, 10)
