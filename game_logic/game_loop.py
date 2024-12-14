@@ -2,6 +2,7 @@
 import sys
 import pygame
 
+from saved_info.spaceship_build.info_spaceship import InfoSpaceship
 from variables import constants as cv
 from display.game_window import GameWindow
 from display.text_display import TextDisplay
@@ -33,6 +34,11 @@ class GameLoop:
                 coins = self._update_coins()
                 self._update_start_menu_display(score, coins)
 
+            elif self.game_state == 'shop':
+                self.window.shop()
+                coins = self._update_coins()
+                self._update_shop(coins)
+
             elif self.game_state == 'game':
                 self.window.game()
 
@@ -51,6 +57,8 @@ class GameLoop:
             self.window.clock.tick(60)
 
     def _reset_game_full_initial(self):
+        self.spaceship_build = self._create_spaceship_build()
+
         self.bullets = self._create_bullets()
         self.enemy = self._create_enemy()
         self.spaceship = self._create_spaceship()
@@ -60,9 +68,46 @@ class GameLoop:
         self.highscore_info = self._create_highscore_info()
         self.coin_info = self._create_coins_info()
 
+    def _handle_events(self):
+        keys = pygame.key.get_pressed()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
+                self.close_game()
+
+            if self.game_state == 'start_menu':
+                if keys[pygame.K_RETURN]:
+                    self._reset_game()
+
+            if self.game_state in ['start_menu', 'shop']:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    mouse = pygame.mouse.get_pos()
+                    if self.game_state == 'start_menu':
+                        start_button_rect = self.text_display.button_start_game()
+                        shop_button_rect = self.text_display.button_shop()
+                        if start_button_rect.collidepoint(mouse):
+                            self._reset_game()
+                        elif shop_button_rect.collidepoint(mouse):
+                            self.game_state = 'shop'
+                    elif self.game_state == 'shop':
+                        shop_speed_button_rect = self.text_display.button_shop_speed()
+                        home_button_rect = self.text_display.button_home()
+                        if shop_speed_button_rect.collidepoint(mouse):
+                            if self.coin_info.total_coins >= cv.PRICE_SPEED:
+                                self.coin_info.set_total_coins(self.coin_info.total_coins - cv.PRICE_SPEED)
+                                self.spaceship_build.buy_speed()
+                                speed, size = self.spaceship_build.get_spaceship_build()
+                                self.spaceship.speed = speed
+                            else:
+                                print('Not enough coins to buy speed')
+                        elif home_button_rect.collidepoint(mouse):
+                            self.game_state = 'start_menu'
+
+    @staticmethod
+    def _create_spaceship_build():
+        return InfoSpaceship()
+
     def _create_spaceship(self):
-        speed = 3
-        size = (75, 75)
+        speed, size = self.spaceship_build.get_spaceship_build()
         return SpaceShip(self.window, self.enemy, speed, size)
 
     def _create_bullets(self):
@@ -102,24 +147,11 @@ class GameLoop:
     def _create_coins_info(self):
         return InfoCoins(self.spaceship)
 
-    def _handle_events(self):
-        keys = pygame.key.get_pressed()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
-                self.close_game()
-
-            if self.game_state == 'start_menu':
-                if keys[pygame.K_RETURN]:
-                    self._reset_game()
-
-                start_button_rect = self.text_display.button_start_game()
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    mouse = pygame.mouse.get_pos()
-                    if start_button_rect.collidepoint(mouse):
-                        self._reset_game()
-
     def _update_start_menu_display(self, score, coins):
         self.text_display.update_start_menu(score, coins)
+
+    def _update_shop(self, coins):
+        self.text_display.update_shop(coins)
 
     def _update_game_display(self):
         self.text_display.update_game()
@@ -149,12 +181,12 @@ class GameLoop:
 
     def _check_game_over(self):
         if self.spaceship.lives <= 0:
-            self._update_coins()
             self._update_highscore()
-            self.spaceship.coins = 0
+            self.coin_info.set_total_coins(self.coin_info.total_coins + self.spaceship.coins)
             self.game_state = 'start_menu'
 
     def _reset_game(self):
+        self.spaceship_build = self._create_spaceship_build()
         self.bullets = self._create_bullets()
         self.enemy = self._create_enemy()
         self.spaceship = self._create_spaceship()
