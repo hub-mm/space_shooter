@@ -21,3 +21,7 @@ class GameWindow(object):
     def game(self):
         self.surface.fill(cv.COLOUR_BACKGROUND)
         pygame.display.set_caption(cv.WINDOW_TEXT)
+
+    def shop(self):
+        self.surface.fill(cv.COLOUR_BACKGROUND)
+        pygame.display.set_caption(cv.WINDOW_SHOP_TEXT)

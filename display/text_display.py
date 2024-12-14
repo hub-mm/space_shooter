@@ -18,6 +18,13 @@ class TextDisplay(object):
         self._display_highscore(score)
         self._display_total_coins(coins)
         self.button_start_game()
+        self.button_shop()
+
+    def update_shop(self, coins):
+        self._display_title()
+        self._display_total_coins(coins)
+        self.button_shop_speed()
+        self.button_home()
 
     def update_game(self):
         self._display_title()
@@ -112,6 +119,7 @@ class TextDisplay(object):
         self.window.surface.blit(coin_img, (5, 5))
         self.window.surface.blit(text_coins, (45, 8))
 
+    # Buttons
     def button_start_game(self):
         start_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 - 100, 200, 50)
         mouse = pygame.mouse.get_pos()
@@ -128,3 +136,54 @@ class TextDisplay(object):
         self.window.surface.blit(text_start, text_rect)
 
         return start_button
+
+    def button_shop(self):
+        shop_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 - 25, 200, 50)
+        mouse = pygame.mouse.get_pos()
+
+        if shop_button.collidepoint(mouse):
+            pygame.draw.rect(self.window.surface, (200, 0, 0), shop_button, 0, 10)
+            text_shop = self.style_text.render(f"shop", True, (0, 0, 0))
+        else:
+            pygame.draw.rect(self.window.surface, (255, 0, 0), shop_button, 0, 10)
+            text_shop = self.style_text.render(f"shop", True, (255, 255, 255))
+
+        text_rect = text_shop.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2)
+        self.window.surface.blit(text_shop, text_rect)
+
+        return shop_button
+
+    def button_shop_speed(self):
+        shop_speed_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 - 25, 200, 50)
+        mouse = pygame.mouse.get_pos()
+
+        if shop_speed_button.collidepoint(mouse):
+            pygame.draw.rect(self.window.surface, (200, 0, 0), shop_speed_button, 0, 10)
+            text_shop_speed = self.style_text.render(f"buy speed {cv.PRICE_SPEED}", True, (0, 0, 0))
+        else:
+            pygame.draw.rect(self.window.surface, (255, 0, 0), shop_speed_button, 0, 10)
+            text_shop_speed = self.style_text.render(f"buy speed {cv.PRICE_SPEED}", True, (255, 255, 255))
+
+        text_rect = text_shop_speed.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2)
+        self.window.surface.blit(text_shop_speed, text_rect)
+
+        return shop_speed_button
+
+    def button_home(self):
+        home_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT - 75, 200, 50)
+        mouse = pygame.mouse.get_pos()
+
+        if home_button.collidepoint(mouse):
+            pygame.draw.rect(self.window.surface, (200, 0, 0), home_button, 0, 10)
+            text_home = self.style_text.render(f"home", True, (0, 0, 0))
+        else:
+            pygame.draw.rect(self.window.surface, (255, 0, 0), home_button, 0, 10)
+            text_home = self.style_text.render(f"home", True, (255, 255, 255))
+
+        text_rect = text_home.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT - 50)
+        self.window.surface.blit(text_home, text_rect)
+
+        return home_button
