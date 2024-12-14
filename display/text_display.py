@@ -9,7 +9,8 @@ class TextDisplay(object):
         self.window = window
         self.enemy = enemy
         self.spaceship = spaceship
-        self.style_text = pygame.font.SysFont('roboto', 34, True)
+        self.style_text_bold = pygame.font.SysFont('roboto', 34, True)
+        self.style_text_not_bold = pygame.font.SysFont('roboto', 34, False)
         self.wave = 1
 
     def update_start_menu(self, score, coins):
@@ -17,13 +18,25 @@ class TextDisplay(object):
         self._display_score_start_menu()
         self._display_highscore(score)
         self._display_total_coins(coins)
+        self._display_menu()
         self.button_start_game()
         self.button_shop()
+        self.button_guide()
+        self.exit_home()
 
     def update_shop(self, coins):
         self._display_title()
         self._display_total_coins(coins)
         self.button_shop_speed()
+        self.button_home()
+
+    def update_guide(self, coins):
+        self._display_title()
+        self._display_total_coins(coins)
+        self._display_guide_rect()
+        self._display_guide_move()
+        self._display_guide_shoot()
+        self._display_guide_powerup()
         self.button_home()
 
     def update_game(self):
@@ -35,7 +48,7 @@ class TextDisplay(object):
         self._display_score()
 
     def _display_title(self):
-        text_title = self.style_text.render(
+        text_title = self.style_text_bold.render(
             '- - - - - - - - -  s  p  a  c  e     s  h  o  o  t  e  r  - - - - - - - - -',
             True,
             'green'
@@ -46,7 +59,7 @@ class TextDisplay(object):
         self.window.surface.blit(text_title, text_rect)
 
     def _display_coins(self):
-        text_coins = self.style_text.render(f"{self.spaceship.coins}", True, (255, 215, 0))
+        text_coins = self.style_text_bold.render(f"{self.spaceship.coins}", True, (255, 215, 0))
 
         coin_img = pygame.image.load(cv.COIN_IMG_PATH)
         coin_img = pygame.transform.scale(coin_img, (28, 26))
@@ -55,7 +68,7 @@ class TextDisplay(object):
         self.window.surface.blit(text_coins, (45, 8))
 
     def _display_lives(self):
-        text_lives = self.style_text.render(f"{self.spaceship.lives}", True, (255, 0, 0))
+        text_lives = self.style_text_bold.render(f"{self.spaceship.lives}", True, (255, 0, 0))
 
         heart_img = pygame.image.load(cv.HEART_IMG_PATH)
         heart_img = pygame.transform.scale(heart_img, (28, 26))
@@ -64,21 +77,21 @@ class TextDisplay(object):
         self.window.surface.blit(text_lives, (45, 49))
 
     def _display_wave(self):
-        text_wave = self.style_text.render(f"wave {self.enemy.wave}", True, (255, 255, 255))
+        text_wave = self.style_text_bold.render(f"wave {self.enemy.wave}", True, (255, 255, 255))
 
         text_rect = text_wave.get_rect()
         text_rect.topright = (cv.WINDOW_WIDTH - 8, 8)
         self.window.surface.blit(text_wave, text_rect)
 
     def _display_level(self):
-        text_level = self.style_text.render(f"level {self.enemy.level - 1}", True, (255, 255, 255))
+        text_level = self.style_text_bold.render(f"level {self.enemy.level - 1}", True, (255, 255, 255))
 
         text_rect = text_level.get_rect()
         text_rect.topright = (cv.WINDOW_WIDTH - 8, 49)
         self.window.surface.blit(text_level, text_rect)
 
     def _display_score(self):
-        text_score = self.style_text.render(
+        text_score = self.style_text_bold.render(
             f"s c o r e     {self.enemy.total_killed * (self.spaceship.coins + 1)}",
             True,
             (0, 0, 255)
@@ -89,7 +102,7 @@ class TextDisplay(object):
         self.window.surface.blit(text_score, text_rect)
 
     def _display_score_start_menu(self):
-        text_score = self.style_text.render(
+        text_score = self.style_text_bold.render(
             f"s c o r e     {self.enemy.total_killed * (self.spaceship.coins + 1)}",
             True,
             (0, 0, 255)
@@ -100,18 +113,21 @@ class TextDisplay(object):
         self.window.surface.blit(text_score, text_rect)
 
     def _display_highscore(self, highscore):
-        text_highscore = self.style_text.render(
+        text_highscore = self.style_text_bold.render(
             f"h i g h s c o r e     {highscore}",
             True,
             (255, 0, 0)
         )
+
+        highscore_rect = pygame.Rect(cv.WINDOW_WIDTH / 2 - 250, 175, 500, 50)
+        pygame.draw.rect(self.window.surface, (0, 255, 0), highscore_rect, 0, 10)
 
         text_rect = text_highscore.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, 200)
         self.window.surface.blit(text_highscore, text_rect)
 
     def _display_total_coins(self, coins):
-        text_coins = self.style_text.render(f"{coins}", True, (255, 215, 0))
+        text_coins = self.style_text_bold.render(f"{coins}", True, (255, 215, 0))
 
         coin_img = pygame.image.load(cv.COIN_IMG_PATH)
         coin_img = pygame.transform.scale(coin_img, (28, 26))
@@ -119,17 +135,127 @@ class TextDisplay(object):
         self.window.surface.blit(coin_img, (5, 5))
         self.window.surface.blit(text_coins, (45, 8))
 
+    def _display_menu(self):
+        menu_rect = pygame.Rect(cv.WINDOW_WIDTH / 2 - 125, cv.WINDOW_HEIGHT / 2 - 175, 250, 300)
+        pygame.draw.rect(self.window.surface, (0, 0, 150), menu_rect, 0, 10)
+
+        text_menu = self.style_text_bold.render(f"m e n u", True, (255, 255, 255))
+        text_rect = text_menu.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 150)
+        self.window.surface.blit(text_menu, text_rect)
+
+    def _display_guide_rect(self):
+        guide_rect = pygame.Rect(cv.WINDOW_WIDTH / 2 - 250, cv.WINDOW_HEIGHT / 2 - 350, 500, 700)
+        pygame.draw.rect(self.window.surface, (0, 0, 150), guide_rect, 0, 10)
+
+    def _display_guide_move(self):
+        text_move_title = self.style_text_bold.render(f"-  -  -  -  -  -  -  -  -  -  m o v e  -  -  -  -  -  -  -  -  -  -", True, (255, 0, 0))
+        text_rect = text_move_title.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 300)
+        self.window.surface.blit(text_move_title, text_rect)
+
+        text_move_wasd = self.style_text_not_bold.render(f"WASD", True, (255, 255, 255))
+        text_rect = text_move_wasd.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 250)
+        self.window.surface.blit(text_move_wasd, text_rect)
+
+        text_move_arrow_keys = self.style_text_not_bold.render(f"up, right, down, left keys", True, (255, 255, 255))
+        text_rect = text_move_arrow_keys.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 225)
+        self.window.surface.blit(text_move_arrow_keys, text_rect)
+
+    def _display_guide_shoot(self):
+        text_shoot_title = self.style_text_bold.render(f"-  -  -  -  -  -  -  -  -  s h o o t  -  -  -  -  -  -  -  -  -", True, (255, 0, 0))
+        text_rect = text_shoot_title.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 150)
+        self.window.surface.blit(text_shoot_title, text_rect)
+
+        text_shoot = self.style_text_not_bold.render(f"left SHIFT or right SHIFT", True, (255, 255, 255))
+        text_rect = text_shoot.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 100)
+        self.window.surface.blit(text_shoot, text_rect)
+
+    def _display_guide_powerup(self):
+        text_powerup_title = self.style_text_bold.render(f"-  -  -  -  -  -  -  -  p o w e r u p s  -  -  -  -  -  -  -  -", True, (255, 0, 0))
+        text_rect = text_powerup_title.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 25)
+        self.window.surface.blit(text_powerup_title, text_rect)
+
+        text_square_colour = self.style_text_not_bold.render(f"square colours", True, (255, 0, 0))
+        text_rect = text_square_colour.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 25)
+        self.window.surface.blit(text_square_colour, text_rect)
+
+        extra_shot_rect = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 + 40, 200, 20)
+        pygame.draw.rect(self.window.surface, (0, 0, 255), extra_shot_rect, 0, 5)
+        text_extra_shot = self.style_text_not_bold.render(f"extra shot", True, (255, 255, 255))
+        text_rect = text_extra_shot.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 50)
+        self.window.surface.blit(text_extra_shot, text_rect)
+
+        less_delay_rect = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 + 65, 200, 20)
+        pygame.draw.rect(self.window.surface, (255, 0, 0), less_delay_rect, 0, 5)
+        text_less_delay = self.style_text_not_bold.render(f"less delay", True, (255, 255, 255))
+        text_rect = text_less_delay.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 75)
+        self.window.surface.blit(text_less_delay, text_rect)
+
+        move_faster_rect = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 + 90, 200, 20)
+        pygame.draw.rect(self.window.surface, (0, 255, 0), move_faster_rect, 0, 5)
+        text_move_faster = self.style_text_not_bold.render(f"move faster", True, (255, 255, 255))
+        text_rect = text_move_faster.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 100)
+        self.window.surface.blit(text_move_faster, text_rect)
+
+        reduce_bullet_gap_rect = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 + 115, 200, 20)
+        pygame.draw.rect(self.window.surface, (255, 0, 255), reduce_bullet_gap_rect, 0, 5)
+        text_reduce_bullet_gap = self.style_text_not_bold.render(f"reduce bullet gap", True, (255, 255, 255))
+        text_rect = text_reduce_bullet_gap.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 125)
+        self.window.surface.blit(text_reduce_bullet_gap, text_rect)
+
+        text_icon = self.style_text_not_bold.render(f"icon", True, (255, 0, 0))
+        text_rect = text_icon.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 175)
+        self.window.surface.blit(text_icon, text_rect)
+
+        heart_img = pygame.image.load(cv.HEART_IMG_PATH)
+        heart_img = pygame.transform.scale(heart_img, (22, 20))
+        self.window.surface.blit(heart_img, (cv.WINDOW_WIDTH / 2 - 90, cv.WINDOW_HEIGHT / 2 + 192))
+        text_extra_life = self.style_text_not_bold.render(f"extra life", True, (255, 255, 255))
+        text_rect = text_extra_life.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 200)
+        self.window.surface.blit(text_extra_life, text_rect)
+
+        coin_img = pygame.image.load(cv.COIN_IMG_PATH)
+        coin_img = pygame.transform.scale(coin_img, (22, 20))
+        self.window.surface.blit(coin_img, (cv.WINDOW_WIDTH / 2 - 90, cv.WINDOW_HEIGHT / 2 + 215))
+        text_extra_coin = self.style_text_not_bold.render(f"extra coin", True, (255, 255, 255))
+        text_rect = text_extra_coin.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 225)
+        self.window.surface.blit(text_extra_coin, text_rect)
+
+        invincibility_img = pygame.image.load(cv.INVINCIBLE_IMG_PATH)
+        invincibility_img = pygame.transform.scale(invincibility_img, (22, 20))
+        self.window.surface.blit(invincibility_img, (cv.WINDOW_WIDTH / 2 - 90, cv.WINDOW_HEIGHT / 2 + 238))
+        text_invincible = self.style_text_not_bold.render(f"invincibility", True, (255, 255, 255))
+        text_rect = text_invincible.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 250)
+        self.window.surface.blit(text_invincible, text_rect)
+
+
     # Buttons
+
     def button_start_game(self):
         start_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 - 100, 200, 50)
         mouse = pygame.mouse.get_pos()
 
         if start_button.collidepoint(mouse):
             pygame.draw.rect(self.window.surface, (200, 0, 0), start_button, 0, 10)
-            text_start = self.style_text.render(f"start game", True, (0, 0, 0))
+            text_start = self.style_text_bold.render(f"start game", True, (0, 0, 0))
         else:
             pygame.draw.rect(self.window.surface, (255, 0, 0), start_button, 0, 10)
-            text_start = self.style_text.render(f"start game", True, (255, 255, 255))
+            text_start = self.style_text_bold.render(f"start game", True, (255, 255, 255))
 
         text_rect = text_start.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 75)
@@ -143,10 +269,10 @@ class TextDisplay(object):
 
         if shop_button.collidepoint(mouse):
             pygame.draw.rect(self.window.surface, (200, 0, 0), shop_button, 0, 10)
-            text_shop = self.style_text.render(f"shop", True, (0, 0, 0))
+            text_shop = self.style_text_bold.render(f"shop", True, (0, 0, 0))
         else:
             pygame.draw.rect(self.window.surface, (255, 0, 0), shop_button, 0, 10)
-            text_shop = self.style_text.render(f"shop", True, (255, 255, 255))
+            text_shop = self.style_text_bold.render(f"shop", True, (255, 255, 255))
 
         text_rect = text_shop.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2)
@@ -154,16 +280,33 @@ class TextDisplay(object):
 
         return shop_button
 
+    def button_guide(self):
+        guide_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 + 50, 200, 50)
+        mouse = pygame.mouse.get_pos()
+
+        if guide_button.collidepoint(mouse):
+            pygame.draw.rect(self.window.surface, (200, 0, 0), guide_button, 0, 10)
+            text_guide = self.style_text_bold.render(f"guide", True, (0, 0, 0))
+        else:
+            pygame.draw.rect(self.window.surface, (255, 0, 0), guide_button, 0, 10)
+            text_guide = self.style_text_bold.render(f"guide", True, (255, 255, 255))
+
+        text_rect = text_guide.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 75)
+        self.window.surface.blit(text_guide, text_rect)
+
+        return guide_button
+
     def button_shop_speed(self):
         shop_speed_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 - 25, 200, 50)
         mouse = pygame.mouse.get_pos()
 
         if shop_speed_button.collidepoint(mouse):
             pygame.draw.rect(self.window.surface, (200, 0, 0), shop_speed_button, 0, 10)
-            text_shop_speed = self.style_text.render(f"buy speed {cv.PRICE_SPEED}", True, (0, 0, 0))
+            text_shop_speed = self.style_text_bold.render(f"buy speed {cv.PRICE_SPEED}", True, (0, 0, 0))
         else:
             pygame.draw.rect(self.window.surface, (255, 0, 0), shop_speed_button, 0, 10)
-            text_shop_speed = self.style_text.render(f"buy speed {cv.PRICE_SPEED}", True, (255, 255, 255))
+            text_shop_speed = self.style_text_bold.render(f"buy speed {cv.PRICE_SPEED}", True, (255, 255, 255))
 
         text_rect = text_shop_speed.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2)
@@ -177,13 +320,30 @@ class TextDisplay(object):
 
         if home_button.collidepoint(mouse):
             pygame.draw.rect(self.window.surface, (200, 0, 0), home_button, 0, 10)
-            text_home = self.style_text.render(f"home", True, (0, 0, 0))
+            text_home = self.style_text_bold.render(f"home", True, (0, 0, 0))
         else:
             pygame.draw.rect(self.window.surface, (255, 0, 0), home_button, 0, 10)
-            text_home = self.style_text.render(f"home", True, (255, 255, 255))
+            text_home = self.style_text_bold.render(f"home", True, (255, 255, 255))
 
         text_rect = text_home.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT - 50)
         self.window.surface.blit(text_home, text_rect)
 
         return home_button
+
+    def exit_home(self):
+        exit_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT - 75, 200, 50)
+        mouse = pygame.mouse.get_pos()
+
+        if exit_button.collidepoint(mouse):
+            pygame.draw.rect(self.window.surface, (200, 0, 0), exit_button, 0, 10)
+            text_exit = self.style_text_bold.render(f"exit game", True, (0, 0, 0))
+        else:
+            pygame.draw.rect(self.window.surface, (255, 0, 0), exit_button, 0, 10)
+            text_exit = self.style_text_bold.render(f"exit game", True, (255, 255, 255))
+
+        text_rect = text_exit.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT - 50)
+        self.window.surface.blit(text_exit, text_rect)
+
+        return exit_button

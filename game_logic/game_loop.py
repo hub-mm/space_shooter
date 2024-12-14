@@ -37,7 +37,12 @@ class GameLoop:
             elif self.game_state == 'shop':
                 self.window.shop()
                 coins = self._update_coins()
-                self._update_shop(coins)
+                self._update_shop_display(coins)
+
+            elif self.game_state == 'guide':
+                self.window.guide()
+                coins = self._update_coins()
+                self._update_guide_display(coins)
 
             elif self.game_state == 'game':
                 self.window.game()
@@ -78,19 +83,28 @@ class GameLoop:
                 if keys[pygame.K_RETURN]:
                     self._reset_game()
 
-            if self.game_state in ['start_menu', 'shop']:
+            if self.game_state in ['start_menu', 'shop', 'guide']:
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse = pygame.mouse.get_pos()
+                    home_button_rect = self.text_display.button_home()
+
                     if self.game_state == 'start_menu':
                         start_button_rect = self.text_display.button_start_game()
                         shop_button_rect = self.text_display.button_shop()
+                        guide_button_rect = self.text_display.button_guide()
+                        exit_button_rect = self.text_display.exit_home()
+
                         if start_button_rect.collidepoint(mouse):
                             self._reset_game()
                         elif shop_button_rect.collidepoint(mouse):
                             self.game_state = 'shop'
+                        elif guide_button_rect.collidepoint(mouse):
+                            self.game_state = 'guide'
+                        elif exit_button_rect.collidepoint(mouse):
+                            self.close_game()
                     elif self.game_state == 'shop':
                         shop_speed_button_rect = self.text_display.button_shop_speed()
-                        home_button_rect = self.text_display.button_home()
+
                         if shop_speed_button_rect.collidepoint(mouse):
                             if self.coin_info.total_coins >= cv.PRICE_SPEED:
                                 self.coin_info.set_total_coins(self.coin_info.total_coins - cv.PRICE_SPEED)
@@ -101,6 +115,10 @@ class GameLoop:
                                 print('Not enough coins to buy speed')
                         elif home_button_rect.collidepoint(mouse):
                             self.game_state = 'start_menu'
+                    elif self.game_state == 'guide':
+                        if home_button_rect.collidepoint(mouse):
+                            self.game_state = 'start_menu'
+
 
     @staticmethod
     def _create_spaceship_build():
@@ -150,8 +168,11 @@ class GameLoop:
     def _update_start_menu_display(self, score, coins):
         self.text_display.update_start_menu(score, coins)
 
-    def _update_shop(self, coins):
+    def _update_shop_display(self, coins):
         self.text_display.update_shop(coins)
+
+    def _update_guide_display(self, coins):
+        self.text_display.update_guide(coins)
 
     def _update_game_display(self):
         self.text_display.update_game()

@@ -15,6 +15,8 @@ WINDOW_START_TEXT = 'Welcome to Space Shooter'
 WINDOW_TEXT = 'Space Shooter'
 # Window shop caption
 WINDOW_SHOP_TEXT = 'Space Shooter Shop'
+# Window guide caption
+WINDOW_GUIDE_TEXT = 'Space Shooter Guide'
 
 # Icon image
 ICON_IMG_PATH = './img/target.png'
