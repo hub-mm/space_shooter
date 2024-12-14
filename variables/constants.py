@@ -1,6 +1,4 @@
 # ./variables/constants.py
-
-
 # CONSTANTS VARIABLES
 
 # Window size
@@ -15,6 +13,8 @@ COLOUR_BULLET = (0, 255, 0)
 WINDOW_START_TEXT = 'Welcome to Space Shooter'
 # Window start caption
 WINDOW_TEXT = 'Space Shooter'
+# Window shop caption
+WINDOW_SHOP_TEXT = 'Space Shooter Shop'
 
 # Icon image
 ICON_IMG_PATH = './img/target.png'
@@ -42,3 +42,6 @@ HEART_IMG_PATH = './img/heart.png'
 COIN_IMG_PATH = './img/coin.png'
 # Invincible image
 INVINCIBLE_IMG_PATH = './assets/assets_img/invincible.png'
+
+# Shop
+PRICE_SPEED = 50
