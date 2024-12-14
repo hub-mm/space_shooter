@@ -47,3 +47,4 @@ INVINCIBLE_IMG_PATH = './assets/assets_img/invincible.png'
 
 # Shop
 PRICE_SPEED = 50
+PRICE_EXTRA_SHOT = 50

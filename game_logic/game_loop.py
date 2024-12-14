@@ -13,6 +13,7 @@ from assets.spaceship_powerups.powerups import Powerups
 from game_logic.collision_checks import CollisionChecks
 from saved_info.highscore.info_highscore import InfoHighscore
 from saved_info.coins.info_coins import InfoCoins
+from saved_info.bullet_build.info_bullets import InfoBullets
 
 
 class GameLoop:
@@ -63,6 +64,7 @@ class GameLoop:
 
     def _reset_game_full_initial(self):
         self.spaceship_build = self._create_spaceship_build()
+        self.bullets_build = self._create_bullets_build()
 
         self.bullets = self._create_bullets()
         self.enemy = self._create_enemy()
@@ -104,6 +106,7 @@ class GameLoop:
                             self.close_game()
                     elif self.game_state == 'shop':
                         shop_speed_button_rect = self.text_display.button_shop_speed()
+                        shop_extra_shot_button_rect = self.text_display.button_shop_extra_shot()
 
                         if shop_speed_button_rect.collidepoint(mouse):
                             if self.coin_info.total_coins >= cv.PRICE_SPEED:
@@ -113,6 +116,14 @@ class GameLoop:
                                 self.spaceship.speed = speed
                             else:
                                 print('Not enough coins to buy speed')
+                        elif shop_extra_shot_button_rect.collidepoint(mouse):
+                            if self.coin_info.total_coins >= cv.PRICE_EXTRA_SHOT:
+                                self.coin_info.set_total_coins(self.coin_info.total_coins - cv.PRICE_EXTRA_SHOT)
+                                self.bullets_build.buy_extra_bullet()
+                                max_bullet = self.bullets_build.get_bullet()
+                                self.bullets.maximum = max_bullet
+                            else:
+                                print('Not enough coins to buy extra bullet')
                         elif home_button_rect.collidepoint(mouse):
                             self.game_state = 'start_menu'
                     elif self.game_state == 'guide':
@@ -123,6 +134,10 @@ class GameLoop:
     @staticmethod
     def _create_spaceship_build():
         return InfoSpaceship()
+
+    @staticmethod
+    def _create_bullets_build():
+        return InfoBullets()
 
     def _create_spaceship(self):
         speed, size = self.spaceship_build.get_spaceship_build()
@@ -135,7 +150,7 @@ class GameLoop:
         gap = 250
         delay_next = 0
         delay = 2000
-        maximum = 1
+        maximum = self.bullets_build.get_bullet()
         return Bullets(self.window, size, speed, gap_next, gap, delay_next, delay, maximum)
 
     def _create_enemy(self):
