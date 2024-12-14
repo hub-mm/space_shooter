@@ -1,6 +1,4 @@
 # ./saved_info/info_highscore.py
-
-
 class InfoHighscore(object):
     def __init__(self, enemy, spaceship):
         self.enemy = enemy
