@@ -1,7 +1,4 @@
 # ./assets/spaceship_powerups/extra_life.py
-import pygame
-
-from variables import constants as cv
 from assets.spaceship_powerups.powerups import Powerups
 
 

@@ -9,6 +9,7 @@ from assets.spaceship_powerups.extra_life import ExtraLife
 from assets.spaceship_powerups.extra_coin import ExtraCoin
 from assets.spaceship_powerups.invincible import Invincible
 
+
 class RandomPowerup(object):
     def __init__(self, window, bullets, enemy, spaceship, powerups):
         self.window = window
