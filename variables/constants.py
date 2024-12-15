@@ -1,9 +1,13 @@
 # ./variables/constants.py
+import pygame
+pygame.init()
+
+
 # CONSTANTS VARIABLES
 
 # Window size
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 1000
+WINDOW_HEIGHT = pygame.display.Info().current_h - 75
+WINDOW_WIDTH = WINDOW_HEIGHT - 200
 
 # Colours
 COLOUR_BACKGROUND = (0, 0, 0)

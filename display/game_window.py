@@ -6,7 +6,7 @@ from variables import constants as cv
 
 class GameWindow(object):
     def __init__(self):
-        pygame.init()
+        # pygame.init()
         self.clock = pygame.time.Clock()
 
         self.surface = pygame.display.set_mode((cv.WINDOW_WIDTH, cv.WINDOW_HEIGHT))
