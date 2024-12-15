@@ -27,7 +27,6 @@ class InfoSpaceship(object):
                     speed = int(speed_part.strip())
 
                     size_part = size_part.strip().strip('()')
-                    # size_part = size_part.strip('()')
                     w, h = size_part.split(',')
                     w = int(w.strip())
                     h = int(h.strip())

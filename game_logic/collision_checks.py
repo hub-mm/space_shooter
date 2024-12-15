@@ -5,6 +5,7 @@ import random
 from variables import constants as cv
 from assets.spaceship_powerups.random_powerup import RandomPowerup
 
+
 class CollisionChecks(object):
     def __init__(self, window, bullets, enemy, spaceship, powerups):
         self.window = window

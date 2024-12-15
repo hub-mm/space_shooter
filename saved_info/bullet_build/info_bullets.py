@@ -1,7 +1,7 @@
 # ./saved_info/bullet_build/info_bullet.py
 class InfoBullets(object):
     def __init__(self):
-        self.file_path = './saved_info/bullet_build/bullets.txt'
+        self.file_path = './saved_info/bullet_build/bullets_max.txt'
 
         self.bullet_max = self._read_bullet()
         self._ensure_file_exists()

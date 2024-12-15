@@ -1,6 +1,7 @@
 # ./assets/enemy_sprite.py
 import pygame
 
+
 class EnemySprite(pygame.sprite.Sprite):
     def __init__(self, x, y, image, speed):
         super().__init__()
