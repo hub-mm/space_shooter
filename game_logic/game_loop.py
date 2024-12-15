@@ -48,7 +48,8 @@ class GameLoop:
             elif self.game_state == 'game':
                 self.window.game()
 
-                self._update_game_display()
+                game_state = self.game_state
+                self._update_game_display(game_state)
                 self._update_spaceship()
                 self._update_bullets()
                 self._update_enemy()
@@ -94,7 +95,7 @@ class GameLoop:
                         start_button_rect = self.text_display.button_start_game()
                         shop_button_rect = self.text_display.button_shop()
                         guide_button_rect = self.text_display.button_guide()
-                        exit_button_rect = self.text_display.exit_home()
+                        exit_button_rect = self.text_display.button_exit_home()
 
                         if start_button_rect.collidepoint(mouse):
                             self._reset_game()
@@ -129,6 +130,12 @@ class GameLoop:
                     elif self.game_state == 'guide':
                         if home_button_rect.collidepoint(mouse):
                             self.game_state = 'start_menu'
+
+            if self.game_state == 'game':
+                if keys[pygame.K_p]:
+                    self.game_state = 'pause'
+                    self.window.pause()
+                    self._pause_game()
 
 
     @staticmethod
@@ -189,8 +196,8 @@ class GameLoop:
     def _update_guide_display(self, coins):
         self.text_display.update_guide(coins)
 
-    def _update_game_display(self):
-        self.text_display.update_game()
+    def _update_game_display(self, game_state):
+        self.text_display.update_game(game_state)
 
     def _update_spaceship(self):
         self.window.surface.blit(self.spaceship.spaceship_img, (cv.X, cv.Y))
@@ -220,6 +227,34 @@ class GameLoop:
             self._update_highscore()
             self.coin_info.set_total_coins(self.coin_info.total_coins + self.spaceship.coins)
             self.game_state = 'start_menu'
+
+    def _pause_game(self):
+        while self.game_state == 'pause':
+            self._update_game_display(self.game_state)
+
+            keys = pygame.key.get_pressed()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
+                    self.close_game()
+
+                if keys[pygame.K_p]:
+                    self.game_state = 'game'
+
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    mouse = pygame.mouse.get_pos()
+                    pause_home_button_rect = self.text_display.button_pause_home()
+                    pause_continue_button_rect = self.text_display.button_pause_continue()
+                    pause_exit_button_rect = self.text_display.button_pause_exit_game()
+                    if pause_home_button_rect.collidepoint(mouse):
+                        self.game_state = 'start_menu'
+                    elif pause_continue_button_rect.collidepoint(mouse):
+                        self.game_state = 'game'
+                    elif pause_exit_button_rect.collidepoint(mouse):
+                        self.close_game()
+
+            pygame.display.update()
+            self.window.clock.tick(60)
+
 
     def _reset_game(self):
         self.spaceship_build = self._create_spaceship_build()

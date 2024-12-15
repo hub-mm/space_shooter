@@ -22,7 +22,7 @@ class TextDisplay(object):
         self.button_start_game()
         self.button_shop()
         self.button_guide()
-        self.exit_home()
+        self.button_exit_home()
 
     def update_shop(self, coins):
         self._display_title()
@@ -40,13 +40,19 @@ class TextDisplay(object):
         self._display_guide_powerup()
         self.button_home()
 
-    def update_game(self):
+    def update_game(self, game_state):
         self._display_title()
         self._display_lives()
         self._display_coins()
         self._display_wave()
         self._display_level()
         self._display_score()
+
+        if game_state == 'pause':
+            self._pause_background()
+            self.button_pause_continue()
+            self.button_pause_exit_game()
+            self.button_pause_home()
 
     def _display_title(self):
         text_title = self.style_text_bold.render(
@@ -120,8 +126,8 @@ class TextDisplay(object):
             (255, 0, 0)
         )
 
-        highscore_rect = pygame.Rect(cv.WINDOW_WIDTH / 2 - 250, 175, 500, 50)
-        pygame.draw.rect(self.window.surface, (0, 255, 0), highscore_rect, 0, 10)
+        highscore_rect = pygame.Rect(5, 187.5, cv.WINDOW_WIDTH - 10, 25)
+        pygame.draw.rect(self.window.surface, (0, 255, 0), highscore_rect, 0, 2)
 
         text_rect = text_highscore.get_rect()
         text_rect.center = (cv.WINDOW_WIDTH / 2, 200)
@@ -244,6 +250,15 @@ class TextDisplay(object):
         text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 250)
         self.window.surface.blit(text_invincible, text_rect)
 
+    def _pause_background(self):
+        pause_background_rect = pygame.Rect(cv.WINDOW_WIDTH / 2 - 125, cv.WINDOW_HEIGHT / 2 - 175, 250, 300)
+        pygame.draw.rect(self.window.surface, (0, 255, 0, 128), pause_background_rect, 0 , 10)
+
+        text_menu = self.style_text_bold.render(f"p a u s e", True, (255, 0, 0))
+        text_rect = text_menu.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 150)
+        self.window.surface.blit(text_menu, text_rect)
+
 
     # Buttons
 
@@ -349,7 +364,7 @@ class TextDisplay(object):
 
         return home_button
 
-    def exit_home(self):
+    def button_exit_home(self):
         exit_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT - 75, 200, 50)
         mouse = pygame.mouse.get_pos()
 
@@ -364,4 +379,53 @@ class TextDisplay(object):
         text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT - 50)
         self.window.surface.blit(text_exit, text_rect)
 
-        return exit_button
+    def button_pause_continue(self):
+        continue_pause_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 - 100, 200, 50)
+        mouse = pygame.mouse.get_pos()
+
+        if continue_pause_button.collidepoint(mouse):
+            pygame.draw.rect(self.window.surface, (200, 0, 0), continue_pause_button, 0, 10)
+            text_pause_continue = self.style_text_bold.render(f"continue", True, (0, 0, 0))
+        else:
+            pygame.draw.rect(self.window.surface, (255, 0, 0), continue_pause_button, 0, 10)
+            text_pause_continue = self.style_text_bold.render(f"continue", True, (255, 255, 255))
+
+        text_rect = text_pause_continue.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 - 75)
+        self.window.surface.blit(text_pause_continue, text_rect)
+
+        return continue_pause_button
+
+    def button_pause_home(self):
+        home_pause_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 - 25, 200, 50)
+        mouse = pygame.mouse.get_pos()
+
+        if home_pause_button.collidepoint(mouse):
+            pygame.draw.rect(self.window.surface, (200, 0, 0), home_pause_button, 0, 10)
+            text_pause_home = self.style_text_bold.render(f"home", True, (0, 0, 0))
+        else:
+            pygame.draw.rect(self.window.surface, (255, 0, 0), home_pause_button, 0, 10)
+            text_pause_home = self.style_text_bold.render(f"home", True, (255, 255, 255))
+
+        text_rect = text_pause_home.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2)
+        self.window.surface.blit(text_pause_home, text_rect)
+
+        return home_pause_button
+
+    def button_pause_exit_game(self):
+        exit_game_pause_button = pygame.Rect(cv.WINDOW_WIDTH / 2 - 100, cv.WINDOW_HEIGHT / 2 + 50, 200, 50)
+        mouse = pygame.mouse.get_pos()
+
+        if exit_game_pause_button.collidepoint(mouse):
+            pygame.draw.rect(self.window.surface, (200, 0, 0), exit_game_pause_button, 0, 10)
+            text_pause_exit_game = self.style_text_bold.render(f"exit game", True, (0, 0, 0))
+        else:
+            pygame.draw.rect(self.window.surface, (255, 0, 0), exit_game_pause_button, 0, 10)
+            text_pause_exit_game = self.style_text_bold.render(f"exit game", True, (255, 255, 255))
+
+        text_rect = text_pause_exit_game.get_rect()
+        text_rect.center = (cv.WINDOW_WIDTH / 2, cv.WINDOW_HEIGHT / 2 + 75)
+        self.window.surface.blit(text_pause_exit_game, text_rect)
+
+        return exit_game_pause_button

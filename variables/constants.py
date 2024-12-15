@@ -17,6 +17,8 @@ WINDOW_TEXT = 'Space Shooter'
 WINDOW_SHOP_TEXT = 'Space Shooter Shop'
 # Window guide caption
 WINDOW_GUIDE_TEXT = 'Space Shooter Guide'
+# Window pause caption
+WINDOW_GAME_PAUSE = 'Space Shooter Paused'
 
 # Icon image
 ICON_IMG_PATH = './img/target.png'
