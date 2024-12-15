@@ -61,7 +61,7 @@ class Powerups(object):
                     p_type.powerup_name == 'invincible'):
                 self.window.surface.blit(self.load_img(p_type), (p_rect.x, p_rect.y))
             else:
-                pygame.draw.rect(self.window.surface, p_type.colour, p_rect)
+                pygame.draw.rect(self.window.surface, p_type.colour, p_rect, 0, 5)
 
     def check_collisions(self):
         spaceship_rect = pygame.Rect(
@@ -78,6 +78,9 @@ class Powerups(object):
             p_rect = entry['rect']
 
             if p_rect.colliderect(spaceship_rect):
+                if p_type.powerup_name == 'invincible':
+                    self.spaceship.state_count = 0
+
                 p_type.powerup_activated()
                 to_remove.append(key)
 
