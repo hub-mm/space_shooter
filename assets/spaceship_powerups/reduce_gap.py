@@ -1,4 +1,4 @@
-# ./assets/spaceship_powerups/move_faster.py
+# ./assets/spaceship_powerups/reduce_gap.py
 from assets.spaceship_powerups.powerups import Powerups
 
 
