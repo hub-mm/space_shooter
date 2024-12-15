@@ -2,7 +2,6 @@
 import sys
 import pygame
 
-from saved_info.spaceship_build.info_spaceship import InfoSpaceship
 from variables import constants as cv
 from display.game_window import GameWindow
 from display.text_display import TextDisplay
@@ -11,9 +10,12 @@ from assets.enemy import Enemy
 from assets.spaceship import SpaceShip
 from assets.spaceship_powerups.powerups import Powerups
 from game_logic.collision_checks import CollisionChecks
+from saved_info.spaceship_build.info_spaceship import InfoSpaceship
 from saved_info.highscore.info_highscore import InfoHighscore
 from saved_info.coins.info_coins import InfoCoins
 from saved_info.bullet_build.info_bullets import InfoBullets
+from saved_info.bullet_build.info_bullet_gap import InfoBulletGap
+from saved_info.extra_coin_value.info_extra_coin_value import InfoExtraCoin
 
 
 class GameLoop:
@@ -28,12 +30,12 @@ class GameLoop:
         while self.run:
             self._handle_events()
 
-            if self.game_state == 'start_menu':
+            if self.game_state == 'start_menu' or self.game_state == 'show_shortcuts':
                 self.window.start_menu()
 
                 score = self._update_highscore()
                 coins = self._update_coins()
-                self._update_start_menu_display(score, coins)
+                self._update_start_menu_display(score, coins, self.game_state)
 
             elif self.game_state == 'shop':
                 self.window.shop()
@@ -66,6 +68,8 @@ class GameLoop:
     def _reset_game_full_initial(self):
         self.spaceship_build = self._create_spaceship_build()
         self.bullets_build = self._create_bullets_build()
+        self.bullets_reduce_gap = self._create_bullet_reduce_gap()
+        self.extra_coin_info = self._create_extra_coin_info()
 
         self.bullets = self._create_bullets()
         self.enemy = self._create_enemy()
@@ -79,63 +83,96 @@ class GameLoop:
     def _handle_events(self):
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
-                self.close_game()
+            try:
+                if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
+                    self.close_game()
 
-            if self.game_state == 'start_menu':
-                if keys[pygame.K_RETURN]:
-                    self._reset_game()
+                if self.game_state == 'start_menu':
+                    if keys[pygame.K_RETURN]:
+                        self._reset_game()
 
-            if self.game_state in ['start_menu', 'shop', 'guide']:
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    mouse = pygame.mouse.get_pos()
-                    home_button_rect = self.text_display.button_home()
+                if self.game_state in ['start_menu', 'show_shortcuts','shop', 'guide']:
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        mouse = pygame.mouse.get_pos()
+                        home_button_rect = self.text_display.button_home()
 
-                    if self.game_state == 'start_menu':
-                        start_button_rect = self.text_display.button_start_game()
-                        shop_button_rect = self.text_display.button_shop()
-                        guide_button_rect = self.text_display.button_guide()
-                        exit_button_rect = self.text_display.button_exit_home()
+                        if self.game_state == 'start_menu':
+                            start_button_rect = self.text_display.button_start_game()
+                            shop_button_rect = self.text_display.button_shop()
+                            guide_button_rect = self.text_display.button_guide()
+                            key_shortcut_button_rect = self.text_display.button_keyboard_shortcuts()
+                            exit_button_rect = self.text_display.button_exit_home()
 
-                        if start_button_rect.collidepoint(mouse):
-                            self._reset_game()
-                        elif shop_button_rect.collidepoint(mouse):
-                            self.game_state = 'shop'
-                        elif guide_button_rect.collidepoint(mouse):
-                            self.game_state = 'guide'
-                        elif exit_button_rect.collidepoint(mouse):
-                            self.close_game()
-                    elif self.game_state == 'shop':
-                        shop_speed_button_rect = self.text_display.button_shop_speed()
-                        shop_extra_shot_button_rect = self.text_display.button_shop_extra_shot()
+                            if start_button_rect.collidepoint(mouse):
+                                self._reset_game()
+                            elif shop_button_rect.collidepoint(mouse):
+                                self.game_state = 'shop'
+                            elif guide_button_rect.collidepoint(mouse):
+                                self.game_state = 'guide'
+                            elif key_shortcut_button_rect.collidepoint(mouse):
+                                self.game_state = 'show_shortcuts'
 
-                        if shop_speed_button_rect.collidepoint(mouse):
-                            if self.coin_info.total_coins >= cv.PRICE_SPEED:
-                                self.coin_info.set_total_coins(self.coin_info.total_coins - cv.PRICE_SPEED)
-                                self.spaceship_build.buy_speed()
-                                speed, size = self.spaceship_build.get_spaceship_build()
-                                self.spaceship.speed = speed
-                            else:
-                                print('Not enough coins to buy speed')
-                        elif shop_extra_shot_button_rect.collidepoint(mouse):
-                            if self.coin_info.total_coins >= cv.PRICE_EXTRA_SHOT:
-                                self.coin_info.set_total_coins(self.coin_info.total_coins - cv.PRICE_EXTRA_SHOT)
-                                self.bullets_build.buy_extra_bullet()
-                                max_bullet = self.bullets_build.get_bullet()
-                                self.bullets.maximum = max_bullet
-                            else:
-                                print('Not enough coins to buy extra bullet')
-                        elif home_button_rect.collidepoint(mouse):
-                            self.game_state = 'start_menu'
-                    elif self.game_state == 'guide':
-                        if home_button_rect.collidepoint(mouse):
-                            self.game_state = 'start_menu'
+                            elif exit_button_rect.collidepoint(mouse):
+                                self.close_game()
 
-            if self.game_state == 'game':
-                if keys[pygame.K_p]:
-                    self.game_state = 'pause'
-                    self.window.pause()
-                    self._pause_game()
+                        elif self.game_state == 'shop':
+                            shop_speed_button_rect = self.text_display.button_shop_speed()
+                            shop_extra_shot_button_rect = self.text_display.button_shop_extra_shot()
+                            shop_reduce_gap_button_rect = self.text_display.button_shop_reduce_gap()
+                            shop_extra_coin_button_rect = self.text_display.button_shop_extra_coin()
+
+                            if shop_speed_button_rect.collidepoint(mouse):
+                                if self.coin_info.total_coins >= cv.PRICE_SPEED:
+                                    self.coin_info.set_total_coins(self.coin_info.total_coins - cv.PRICE_SPEED)
+                                    self.spaceship_build.buy_speed()
+                                    speed, size = self.spaceship_build.get_spaceship_build()
+                                    self.spaceship.speed = speed
+                                else:
+                                    print('Not enough coins to buy speed')
+
+                            elif shop_extra_shot_button_rect.collidepoint(mouse):
+                                if self.coin_info.total_coins >= cv.PRICE_EXTRA_SHOT:
+                                    self.coin_info.set_total_coins(self.coin_info.total_coins - cv.PRICE_EXTRA_SHOT)
+                                    self.bullets_build.buy_extra_bullet()
+                                    max_bullet = self.bullets_build.get_bullet()
+                                    self.bullets.maximum = max_bullet
+                                else:
+                                    print('Not enough coins to buy extra bullet')
+
+                            elif shop_extra_coin_button_rect.collidepoint(mouse):
+                                if self.coin_info.total_coins >= cv.PRICE_EXTRA_COIN:
+                                    self.coin_info.set_total_coins(self.coin_info.total_coins - cv.PRICE_EXTRA_COIN)
+                                    self.extra_coin_info.add_extra_coins()
+                                else:
+                                    print('Not enough coins to buy extra coin')
+
+                            elif shop_reduce_gap_button_rect.collidepoint(mouse):
+                                if self.coin_info.total_coins >= cv.PRICE_REDUCE_BULLET_GAP:
+                                    self.coin_info.set_total_coins(self.coin_info.total_coins - cv.PRICE_REDUCE_BULLET_GAP)
+                                    self.bullets_reduce_gap.buy_reduce_gap_bullet()
+                                    bullet_gap = self.bullets_reduce_gap.get_bullet_gap()
+                                    self.bullets.gap = bullet_gap
+                                else:
+                                    print('Not enough coins to buy reduce bullet gap')
+
+                            elif home_button_rect.collidepoint(mouse):
+                                self.game_state = 'start_menu'
+                        elif self.game_state == 'guide':
+                            if home_button_rect.collidepoint(mouse):
+                                self.game_state = 'start_menu'
+
+                    elif event.type == pygame.MOUSEBUTTONUP and self.game_state == 'show_shortcuts':
+                        self.game_state = 'start_menu'
+
+                if self.game_state == 'game':
+                    if keys[pygame.K_p]:
+                        self.game_state = 'pause'
+                        self.window.pause()
+                        self._pause_game()
+
+            except AttributeError:
+                return
+
 
 
     @staticmethod
@@ -146,6 +183,14 @@ class GameLoop:
     def _create_bullets_build():
         return InfoBullets()
 
+    @staticmethod
+    def _create_extra_coin_info():
+        return InfoExtraCoin()
+
+    @staticmethod
+    def _create_bullet_reduce_gap():
+        return InfoBulletGap()
+
     def _create_spaceship(self):
         speed, size = self.spaceship_build.get_spaceship_build()
         return SpaceShip(self.window, self.enemy, speed, size)
@@ -154,7 +199,7 @@ class GameLoop:
         size = (5, 15)
         speed = 10
         gap_next = 0
-        gap = 250
+        gap = self.bullets_reduce_gap.get_bullet_gap()
         delay_next = 0
         delay = 2000
         maximum = self.bullets_build.get_bullet()
@@ -187,8 +232,8 @@ class GameLoop:
     def _create_coins_info(self):
         return InfoCoins(self.spaceship)
 
-    def _update_start_menu_display(self, score, coins):
-        self.text_display.update_start_menu(score, coins)
+    def _update_start_menu_display(self, score, coins, game_state):
+        self.text_display.update_start_menu(score, coins, game_state)
 
     def _update_shop_display(self, coins):
         self.text_display.update_shop(coins)
@@ -258,6 +303,10 @@ class GameLoop:
 
     def _reset_game(self):
         self.spaceship_build = self._create_spaceship_build()
+        self.bullets_build = self._create_bullets_build()
+        self.bullets_reduce_gap = self._create_bullet_reduce_gap()
+        self.extra_coin_info = self._create_extra_coin_info()
+
         self.bullets = self._create_bullets()
         self.enemy = self._create_enemy()
         self.spaceship = self._create_spaceship()
