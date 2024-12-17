@@ -49,7 +49,7 @@ allowing you to continue your journey seamlessly.
 ### Steps
 1. **Clone the Repository**
     ```bash
-    git clone
+    git clone https://github.com/hub-mm/space_shooter.git
     ```
 2. **Move into the Repository**
     ```bash
