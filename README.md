@@ -79,6 +79,7 @@ From there, you can navigate through the game, shop and guide section.
 - **Move Left:** *A* or *Left Arrow*
 - **Move Right:** *D* or *Right Arrow*
 - **Move Up:** *W* or *Up Arrow*
+- **Move Down:** *S* or *Down Arrow*
 - **Shoot:** *Left Shift* or *Right Shift*
 - **Pause Game:** *P*
 - **Start Game:** *Enter*
